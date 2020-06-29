@@ -18,7 +18,6 @@ plt.show()
 
 #clean column //some sports are duplicates because of different case writing
 data['sport'] = data['Sport'].apply(lambda x: x.lower().strip())
-del data.Sport
 
 #redo plot to see categories by sport again
 sns.catplot(x='Year', y = 'earnings ($ million)', hue='sport', data=data)
