@@ -35,8 +35,14 @@ def categorize_sports(sport):
 data['sports_cat'] = data['sport'].apply(lambda x: categorize_sports(x))
 
 #redo plot to see sports categories instead of sports names
-sns.catplot(x='Year', y = 'earnings ($ million)', hue='sports_cat', data=data)
+fig, (ax1, ax2) = plt.subplots(ncols=2, fig_size=(20,8))
+sns.catplot(x='Year', y = 'earnings ($ million)', hue='sports_cat', data=data, ax=ax1)
+#category plot with axes switched
+sns.catplot(x='sports_cat', y = 'earnings ($ million)', data=data, ax=ax2)
 plt.show()
 
+#Sports categories - which sports are most likely to have the highest earners?
+chart = sns.countplot(x='sports_cat', data=data)
+chart.set_xticklabels(chart.get_xticklabels(), rotation = 45, horizontalalignment='right')
 
 
