@@ -6,6 +6,7 @@ import streamlit as st
 #https://www.kaggle.com/parulpandey/forbes-highest-paid-athletes-19902019/data
 df = pd.read_csv('Forbes Richest Atheletes (Forbes Richest Athletes 1990-2019).csv')
 data = df.copy()
+data.shape #(291 obs, 10 features)
 
 #initial figures for interest
 fig, ax = plt.subplots()
@@ -42,7 +43,7 @@ sns.catplot(x='sports_cat', y = 'earnings ($ million)', data=data, ax=ax2)
 plt.show()
 
 #Sports categories - which sports are most likely to have the highest earners?
-chart = sns.countplot(x='sports_cat', data=data)
+chart = data['sports_cat'].value_counts().plot(kind='bar')
 chart.set_xticklabels(chart.get_xticklabels(), rotation = 45, horizontalalignment='right')
 
 
