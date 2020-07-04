@@ -1,1 +1,3 @@
 .vscode
+clean_data.csv
+__pycache__
