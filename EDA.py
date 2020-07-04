@@ -57,7 +57,6 @@ chart = sns.catplot(x='sports_cat', y= 'earnings ($ million)', data=data_top)
 plt.xticks(rotation=45, horizontalalignment='right')
 
 #save to new file for visualization
-del data['sport'], data['Sport']
-data.rename(columns={'earnings ($ million)':'earnings', 'sports_cat':'sport'}, inplace=True)
-data.to_csv('clean_data.csv')
+#interested in slices of athletes, sport, and networth/earnings so will visualize these mostly
+#will delete previous year ranking, generalize sports categories because most athletes play one sport
 
