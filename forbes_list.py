@@ -1,6 +1,8 @@
 import streamlit as st 
 import pandas as pd
 import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
 
 st.title('Forbes Richest Athletes 1990-2019')
 
@@ -20,7 +22,7 @@ def categorize_sports(sport):
 @st.cache
 #change data based on EDA changes and cleaning
 def load_data(rows):
-    data = pd.read_csv('Forbes Richest Atheletes (Forbes Richest Athletes 1990-2019).csv')
+    data = pd.read_csv('Forbes Richest Athletes 1990-2019.csv')
     data['sports_cat'] = data['Sport'].apply(lambda x: categorize_sports(x))
     del data['Sport'], data['Previous Year Rank'], data['S.NO'] #not interested in index or prev yr
     data.rename(columns={'earnings ($ million)':'Earnings(mil)', 'sports_cat':'Sport'}, inplace=True)
@@ -35,7 +37,25 @@ load_state.text('Loading data... Done!')
 st.subheader('Raw Data')
 st.write(data)
 
-#histogram by most frequent sport on list
-st.subheader('List Appearances by Sport')
-sport_ct = pd.DataFrame(data['Sport'].value_counts())
-st.bar_chart(sport_ct)
+#bubble plot by most frequent sport over the years
+fig_bubble = px.scatter(data, x='Year', y='Earnings(mil)', log_y=True,
+    size='Earnings(mil)',color='Sport',hover_name='Name',
+    title='Earnings by Sport 1990-2019')
+
+#heatmap of earnings by sport
+fig_map = go.Figure(data=go.Heatmap(
+                   z=data['Earnings(mil)'],
+                   x=data['Sport'],
+                   y=data['Year'],
+                   hoverongaps = False))
+
+#Top five total earnings by sport distributions
+#displays
+if st.button('See Earnings over Time'):
+    st.write('The figure below shows how top earnings evolve over three decades with sport '+
+    'differentiations shown. Hover over each bubble to see individual athlete earnings')
+    st.write(fig_bubble)
+if st.button('See Earnings by Sport'):
+    st.write('The heatmap shows which sports have become more or less lucrative with list ' +
+    'appearances and dollars over time')
+    st.write(fig_map)
