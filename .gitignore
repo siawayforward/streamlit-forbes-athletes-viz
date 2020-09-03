@@ -1,3 +1,4 @@
 .vscode
 clean_data.csv
 __pycache__
+test.ipynb
