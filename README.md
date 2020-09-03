@@ -6,6 +6,7 @@ Data cleaning and streamlit mini-project to visualize top athlete earners from 1
 
 - Install streamlit library `pip install streamlit`, along with `matplotlib`, `seaborn`, and `plotly`
 - Download the data and script files `Forbes Richest Athletes 1990-2019.csv` and `forbes_list.py`
+- If you'd like to access the original dataset online, it can be found [here](https://www.kaggle.com/parulpandey/forbes-highest-paid-athletes-19902019/data)
 - In your terminal enter the following command
 
 ```cmd
