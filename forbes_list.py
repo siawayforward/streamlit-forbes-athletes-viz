@@ -1,37 +1,20 @@
 import streamlit as st 
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import plotly.graph_objects as go
-
-st.title('Forbes Richest Athletes 1990-2019')
+import data_figures as dfig
 
 # streamlit run forbes_list.py for app to load
+st.title('Forbes Richest Athletes 1990-2019')
+#data items
+#@st.cache
+loadstate = st.text('Loading data')
+data = dfig.load_data(300)
 
-# we have duplicates. Trying to see more general sport category 
-# e.g. American Football for NFL or football OR Basketball for NBA, basketball entries
-def categorize_sports(sport):
-    sport = sport.lower()
-    if sport == 'nfl' or sport == 'american football': return 'NFL'
-    if sport == 'nba' or sport == 'basketball': return 'Basketball'
-    if '/' in sport: return 'Two-Sport Athlete'
-    if 'racing' in sport or 'motor' in sport or 'nascar' in sport: return 'Motorsports'
-    if len(sport) <= 3: return sport.upper() #sport abbreviations for leagues
-    return sport.title()
-
-@st.cache
-#change data based on EDA changes and cleaning
-def load_data(rows):
-    data = pd.read_csv('Forbes Richest Athletes 1990-2019.csv')
-    data['sports_cat'] = data['Sport'].apply(lambda x: categorize_sports(x))
-    del data['Sport'], data['Previous Year Rank'], data['S.NO'] #not interested in index or prev yr
-    data.rename(columns={'earnings ($ million)':'Earnings(mil)', 'sports_cat':'Sport'}, inplace=True)
-    return data
+#figures
+figs_bubbles = dfig.get_earnings_over_time(data)
+fig_bar = dfig.get_US_sports(data)
+fig = dfig.get_highest_earners(data)
+loadstate.text('Loading data... Done!')
 
 #Load data with prompts
-load_state = st.text('Loading data...')
-data = load_data(300)
-load_state.text('Loading data... Done!')
 
 #data source and disclaimer
 disclaimer = """
@@ -44,29 +27,6 @@ if st.button('Show Raw Data'):
     st.write(data)
     st.write(disclaimer)
 
-#Diagrams to display if prompted
-#bubble plot by most frequent sport over the years
-fig_bubble = px.scatter(data, x='Year', y='Earnings(mil)', log_y=True,
-    size='Earnings(mil)',color='Sport',hover_name='Name',
-    title='Earnings by Sport 1990-2019')
-
-#USA athletes only
-fig_bubble_US = px.scatter(data[data['Nationality']=='USA'], x='Year', y='Earnings(mil)', log_y=True,
-    size='Earnings(mil)',color='Sport',hover_name='Name',
-    title='Earnings by Sport in the U.S. 1990-2019')
-
-#bar chart for earnings by year
-data_four = data[(data['Sport']=='Basketball') | (data['Sport']=='Baseball') |
-                (data['Sport']=='NFL') | (data['Sport']=='Hockey')]
-fig_bar = px.bar(data_four, x='Year', y='Earnings(mil)', color='Sport', hover_name='Name',
-                title='Earnings by Sport 1990-2019')
-
-#heatmap of earnings by sport
-fig_map = go.Figure(data=go.Heatmap(
-                   z=data['Earnings(mil)'],
-                   x=data['Sport'],
-                   y=data['Year'],
-                   hoverongaps = False))
 
 #Top total earnings by sport distributions
 #read text for each figure
@@ -74,15 +34,20 @@ graph_options = st.sidebar.selectbox('What would you like to see?',
             ('Select Figure', 'Earnings over Time', 'Top Four Sports: USA', 'Who\'s Winning?'))
 #displays
 if graph_options == 'Earnings over Time':
-    st.write('How sports have become more or less lucrative with list appearances over time')
-    st.write(fig_bubble)
+    st.subheader('How sports have become more or less lucrative with list appearances over time')
+    #show by US vs World
+    US_only = st.checkbox('See US Athletes only')
+    if US_only:
+        st.write(figs_bubbles[1])
+    else:
+        st.write(figs_bubbles[0])
     st.write(disclaimer, '\n*Hover over each bubble to see individual athlete details*')
     st.write("""
         **Carrying the Load**
 
-        There is a huge disparity in pay between boxing and other sports; even consistent list visitors
-        from basketball. This is mainly driven by *Floyd Mayweather*, who by himself consistently makes
-        10 figures for a single fight among other business ventures. Another sport driven by a single
+        There is a huge disparity in pay between boxing and other sports in the last decade; even consistent 
+        list visitors from basketball. This is mainly driven by *Floyd Mayweather*, who by himself consistently 
+        makes 10 figures for a single fight among other business ventures. Another sport driven by a single
         athlete's earnings in tournament play and endorsements is golf with *Tiger Woods*, who is 
         regarded as the top player of his generation with a career prime that lasted most of the 2000's.
         Even while not playing at the top of the sport for most of the 2010's, he still managed to appear
@@ -93,20 +58,30 @@ if graph_options == 'Earnings over Time':
         **Always There When you Call**
 
         Basketball players have not missed a year on this Forbes top earners list in the last three decades\*.
-        In the 1990's Michael Jordan was a constant on the list with earnings from playing and endorsements. 
-        This torch was then taken over by the late, great, Kobe Bean Bryant during his storied tenure with the
-        Los Angeles 
+        In the 1990's *Michael Jordan* was a constant on the list with earnings from playing and endorsements. 
+        This torch was then taken over by the late, great, *Kobe Bean Bryant* during his storied tenure with the
+        Los Angeles and then *LeBron James* in the new millenium. Some other athletes who have appeared from the
+        NBA include *Steph Curry* and *Shaquille O'Neal*.
+
+        **USA Athletes**
+
+        Isolating the list to just the United States indicates a bulk of them compose the Forbes list. In this
+        viewing, the basketball appearances are more prominently seen as consistent over the last three decades. 
+        Boxing earnings would change hands by athletes in the early 1990's and it quieted down until the rise of
+        *Floyd Mayweather*. Likewise, golf was mainly dominated by the prime of *Tiger Woods*.
 
     """)
+
 if graph_options == 'Top Four Sports: USA':
-    st.write('How Basketball, Baseball, Football, and Hockey pay off for their athletes')
+    st.subheader('How Basketball, Baseball, Football, and Hockey pay off for their athletes')
     st.write(fig_bar)
     st.write(disclaimer, '\n*Hover over each bar to see individual athlete details*')
     st.write("""
         Over the last 30 years, basketball players have remained the highest earners as individuals.
         Most of them have additional income outside of the NBA that includes branding and shoe deals.
         Football and baseball players are historically less prominent when it comes to sporting goods
-        brand endorsement. The same can be said about hockey.
+        brand endorsement. The same can be said about hockey. It would be interesting to explore a data
+        set that shows the split between game income and endorsement income to compare between sports.
 
         **For the Love of Hockey**
 
@@ -127,6 +102,29 @@ if graph_options == 'Top Four Sports: USA':
         is easier to tie to direct player impacts for NBA superstarts compared to the NFL. You only play on one
         side of the field in football, so your impact can only be represented by so much.
         - The NBA players association has more leverage than their NFL counterparts because of how one player
-        can influence a season for the whole league e.g. LeBron James leaving Cleveland the first time and 
+        can influence a season for the whole league e.g. *LeBron James* leaving Cleveland the first time and 
         the Eastern Conference in 2010 and 2018 respectively.
+
+        **Big Winners don't Earn Big**  
+        Except for basketball and individual sports like golf and boxing, the players who have the highest 
+        paying contracts do not necessarily have the most championships. *Alex Rodriguez* won once with two of
+        baseball's most expensive contracts, and quarterbacks like *Matt Stafford*, *Aaron Rodgers* (hello NFC
+        North!), and *Andrew Luck* have made the Forbes list without having a championship in the years before
+        and after their list appearances.
+    """)
+
+if graph_options == 'Who\'s Winning?':
+    st.subheader('Who has the most earnings and list appearances between 1990-2019')
+    st.write(fig)
+    st.write(disclaimer, '\n*Click zoom arrows to see distribution more clearly*')
+    st.write("""
+        *Tiger Woods*, though appearing on the list x less times than 19 time leading *Michael Jordan* has the 
+        most earnings over the 30 year span. Of note is that this income also includes his endorsement deals with
+        various companies, even after losing a lot of them in 2008. Individual sport athletes have been able to 
+        accumulate a large amount of wealth in shorter periods of time compared to team sport athletes. Even 
+        Michael Jordan, who still appears on the list years after retiring, makes most of his income on merchandise 
+        from the Jordan Brand at Nike. LeBron James, who is part of the transition to the new wave of athletes, 
+        is climbing up the list, having ventured into the entertainment industry and collaborating with his childhood 
+        friend on athlete management. Again, though not atop the list, basketball seems like the best sport to be a 
+        part of for consistent higher levels of income *for superstar players*.
     """)
