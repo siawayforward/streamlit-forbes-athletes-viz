@@ -6,9 +6,11 @@ st.title('Forbes Richest Athletes 1990-2019')
 #data items
 #@st.cache
 loadstate = st.text('Loading data')
+data = None
 data = dfig.load_data(300)
 
 #figures
+fig_bubbles, fig_bar, fig = [[None, None], None, None]
 figs_bubbles = dfig.get_earnings_over_time(data)
 fig_bar = dfig.get_US_sports(data)
 fig = dfig.get_highest_earners(data)
@@ -126,5 +128,5 @@ if graph_options == 'Who\'s Winning?':
         from the Jordan Brand at Nike. LeBron James, who is part of the transition to the new wave of athletes, 
         is climbing up the list, having ventured into the entertainment industry and collaborating with his childhood 
         friend on athlete management. Again, though not atop the list, basketball seems like the best sport to be a 
-        part of for consistent higher levels of income *for superstar players*.
+        part of for consistent higher levels of income *for superstar players*.  
     """)
