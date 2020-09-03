@@ -46,15 +46,26 @@ def get_US_sports(data):
                     title='Earnings by Sport 1990-2019')
     return fig_bar
 
+def chart_features(x, y, ax, title, xlabel, ylabel):
+    chart = sns.barplot(x=x,y=y, ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel(xlabel, fontsize=20)
+    ax.set_ylabel(ylabel, fontsize=20)
+    ax.tick_params(axis='x', labelsize=15)
+    ax.tick_params(axis='y', labelsize=15)
+    chart.set_xticklabels(chart.get_xticklabels(), rotation=45, horizontalalignment='right')
+    return chart
+
 def get_highest_earners(data):
     #earnings by athlete (who earns the highest?) top 10 earners
     earnings = pd.DataFrame(data[['Name', 'Earnings(mil)']])
     earnings = earnings.groupby(by=['Name']).sum().sort_values(by=['Earnings(mil)'], 
                                 ascending=False)
     earnings_top10 = earnings[:10]
-    fig, axes = plt.subplots(ncols=2, figsize=(15, 6))
-    sns.barplot(x=data['Name'].value_counts().index[:10], y=data['Name'].value_counts().values[:10], ax=axes[0])
-    sns.barplot(x=earnings_top10['Name'], y=earnings_top10['Earnings(mil)'], ax=axes[1])
-    axes[0].set_title('Most Forbes List Appearances: 1990-2019')
-    axes[1].set_title('Highest Earners acc. to Forbes: 1990-2019')
+    fig, axes = plt.subplots(ncols=2, figsize=(30, 15))
+    sns.set(font_scale=2)
+    chart_features(data['Name'].value_counts().index[:10], data['Name'].value_counts().values[:10], 
+                   axes[0], 'Most Forbes List Appearances: 1990-2019', 'Name', 'Appearances')
+    chart_features(earnings_top10.index, earnings_top10['Earnings(mil)'], axes[1],
+                  'Highest Earners acc. to Forbes: 1990-2019', 'Name', 'Earnings (in millions)')
     return fig
