@@ -2,6 +2,10 @@
 
 Data cleaning and streamlit mini-project to visualize top athlete earners from 1990-2019 with different slices. The objective of this display is to practice using data visualization modules and packages in Python and web-hosting with the streamlit library.
 
+To view this project online, [go here and follow the prompts](https://forbes-top-athlete-earners.herokuapp.com/)
+
+To run this on your local system, follow the instructions below:
+
 ## Pre-requisites
 
 - Install streamlit library `pip install streamlit`, along with `matplotlib`, `seaborn`, and `plotly`
