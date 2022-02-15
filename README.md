@@ -19,4 +19,4 @@ streamlit run forbes_list.py
 
 This will open a localhost browser and allow you to see the data and accompanying visualizations. There is a filter option for some of the graphics to drill down to the sport or country and drill up to the total number of athletes in the list from a specific sport.
 
-**Note:** This is ongoing as more visualizations and slices are being added
+**Note:** You can also go directly to the app where this is hosted on [Streamlit Cloud](https://share.streamlit.io/siawayforward/streamlit-forbes-athletes-viz/forbes_list.py)
